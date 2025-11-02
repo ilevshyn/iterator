@@ -1,154 +1,72 @@
 package edu.io;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public class Main {
-    static void main(String[] args) {
+    static void main(String[] args) throws IOException {
+        TextSource source;
         if (args.length == 2) {
-            switch (args[0]) {
-                case "c" -> {
-                    System.out.println("Iterating over character in " + args[1]);
-                    try (BufferedReader br = new BufferedReader(new FileReader(args[1]))) {
-                        int character;
-                        while ((character = br.read()) != -1) {
-                            System.out.println((char) character);
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case "w" -> {
-                    System.out.println("Iterating over words in " + args[1]);
-                    try (Scanner sc = new Scanner(new File(args[1]))) {
-                        while (sc.hasNext()) {
-                            String word = sc.next();
-                            System.out.println(word);
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case "s" -> {
-                    System.out.println("Iterating over sentences in " + args[1]);
-                    try (Scanner sc = new Scanner(new File(args[1]))) {
-                        Pattern pattern = Pattern.compile("[^.!?]+[.!?]+");
-                        while (sc.findWithinHorizon(pattern, 0) != null) {
-                            MatchResult match = sc.match();
-                            System.out.println(match.group());
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case "n" -> {
-                    System.out.println("Iterating over numbers in " + args[1]);
-                    try (Scanner sc = new Scanner(new File(args[1]))) {
-                        while (sc.hasNext()) {
-                            if (sc.hasNextInt()) {
-                                int number = sc.nextInt();
-                                System.out.println(number);
-                            } else if (sc.hasNextDouble()) {
-                                double number = sc.nextDouble();
-                                System.out.println(number);
-                            } else {
-                                sc.next();
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case "p" -> {
-                    System.out.println("Iterating over custom regex" + args[0] + "in " + args[1]);
-                    try (Scanner sc = new Scanner(new File(args[1]))) {
-                        Pattern pattern = Pattern.compile(args[0]);
-                        while (sc.findWithinHorizon(pattern, 0) != null) {
-                            MatchResult match = sc.match();
-                            System.out.println(match.group());
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                default -> throw new IllegalArgumentException("Illegal command line argument");
-            }
+            Path path = Path.of(args[1]);
+            String fileContent = Files.readString(path, StandardCharsets.UTF_8);
+            source = new TextSource(fileContent);
         } else if (args.length == 1) {
-            switch (args[0]) {
-                case "c" -> {
-                    System.out.println("Iterating over character from input");
-                    System.out.println("Enter text to iterate over");
-                    try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-                        int character;
-                        while ((character = br.read()) != -1) {
-                            System.out.println((char) character);
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
+            String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);
+            source = new TextSource(input);
+        } else {
+            throw new IllegalArgumentException("Not enough arguments");
+        }
+        performIteration(args[0], source);
+    }
+
+    public static void performIteration(String param, TextSource source) {
+        switch (param) {
+            case "c" -> {
+                System.out.println("Iterating over character");
+                for (String c : source) {
+                    System.out.println(c);
                 }
-                case "w" -> {
-                    System.out.println("Iterating over words from input");
-                    System.out.println("Enter text to iterate over");
-                    try (Scanner sc = new Scanner(System.in)) {
-                        while (sc.hasNext()) {
-                            String word = sc.next();
-                            System.out.println(word);
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case "s" -> {
-                    System.out.println("Iterating over sentences from input");
-                    try (Scanner sc = new Scanner(System.in)) {
-                        Pattern pattern = Pattern.compile("[^.!?]+[.!?]+");
-                        while (sc.findWithinHorizon(pattern, 0) != null) {
-                            MatchResult match = sc.match();
-                            System.out.println(match.group());
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case "n" -> {
-                    System.out.println("Iterating over numbers from input");
-                    System.out.println("Enter text to iterate over");
-                    try (Scanner sc = new Scanner(System.in)) {
-                        while (sc.hasNext()) {
-                            if (sc.hasNextInt()) {
-                                int number = sc.nextInt();
-                                System.out.println(number);
-                            } else if (sc.hasNextDouble()) {
-                                double number = sc.nextDouble();
-                                System.out.println(number);
-                            } else {
-                                sc.next();
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case "p" -> {
-                    System.out.println("Iterating over custom regex" + args[0] + "from input");
-                    try (Scanner sc = new Scanner(System.in)) {
-                        Pattern pattern = Pattern.compile(args[0]);
-                        while (sc.findWithinHorizon(pattern, 0) != null) {
-                            MatchResult match = sc.match();
-                            System.out.println(match.group());
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                default -> throw new IllegalArgumentException("Illegal command line argument");
             }
+            case "w" -> {
+                System.out.println("Iterating over words");
+                for (Iterator<String> it = source.wordIterator(); it.hasNext(); ) {
+                    var w = it.next();
+                    System.out.println(w);
+                }
+            }
+            case "s" -> {
+                System.out.println("Iterating over sentences");
+                for (Iterator<String> it = source.sentenceIterator(); it.hasNext(); ) {
+                    var s = it.next();
+                    System.out.println(s);
+                }
+            }
+            case "n" -> {
+                System.out.println("Iterating over numbers");
+                for (Iterator<String> it = source.numberIterator(); it.hasNext(); ) {
+                    var n = it.next();
+                    System.out.println(n);
+                }
+            }
+            case "r" -> {
+                System.out.println("Enter regex");
+                String regex;
+                try (Scanner sc = new Scanner(System.in)) {
+                    regex = sc.next();
+                }
+                System.out.println("Iterating over custom regex " + regex);
+                for (Iterator<String> it = source.regexIterator(regex); it.hasNext(); ) {
+                    var r = it.next();
+                    System.out.println(r);
+                }
+            }
+            default -> throw new IllegalArgumentException("Argument not recognized");
         }
     }
 }

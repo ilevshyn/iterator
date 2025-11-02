@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class Test_Iterator_3 {
+
     @Test
     void can_iterate_by_chars() {
         var txt = "abc 123";
