@@ -3,6 +3,7 @@ import org.gradle.internal.os.OperatingSystem
 plugins {
     id("java")
     id("application")
+    id("org.graalvm.buildtools.native") version "0.11.1"
 }
 
 group = "edu.io"
