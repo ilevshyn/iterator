@@ -1,13 +1,11 @@
 package edu.io;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Scanner;
-import java.util.regex.MatchResult;
-import java.util.regex.Pattern;
 
 public class Main {
     static void main(String[] args) throws IOException {
@@ -17,8 +15,9 @@ public class Main {
             String fileContent = Files.readString(path, StandardCharsets.UTF_8);
             source = new TextSource(fileContent);
         } else if (args.length == 1) {
-            String input = new String(System.in.readAllBytes(), StandardCharsets.UTF_8);
-            source = new TextSource(input);
+            try (Scanner scanner = new Scanner(System.in)) {
+                source = new TextSource(scanner.nextLine());
+            }
         } else {
             throw new IllegalArgumentException("Not enough arguments");
         }
@@ -28,7 +27,7 @@ public class Main {
     public static void performIteration(String param, TextSource source) {
         switch (param) {
             case "c" -> {
-                System.out.println("Iterating over character");
+                System.out.println("Iterating over characters");
                 for (String c : source) {
                     System.out.println(c);
                 }
